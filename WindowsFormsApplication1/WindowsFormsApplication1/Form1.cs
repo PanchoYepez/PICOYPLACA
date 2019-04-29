@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 namespace WindowsFormsApplication1
 
 {
@@ -24,99 +23,129 @@ namespace WindowsFormsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            calcularpico_placa.Visible = false;
+            try
             {
-                try
+                if (!Ingrese_Placa.Text.Equals("") && !ampm.Text.Equals(""))
                 {
-            
-                    if (!Ingrese_Placa.Text.Equals("") && !ampm.Text.Equals(""))
+                    string placa, hora, fecha;
+                    placa = Ingrese_Placa.Text;
+                    var regexItem = new Regex("^[a-zA-Z0-9]*$");
+                    if (regexItem.IsMatch(placa))
                     {
-                        string placa_auto, horas, fechas;
-                        placa_auto = Ingrese_Placa.Text;
-                        var regexItem = new Regex("^[a-zA-Z0-9]*$");
-                        if (regexItem.IsMatch(placa_auto))
+                        var regexItem2 = new Regex("^[a-zA-Z]*$");
+                        string letras = placa.Substring(0, 3);
+                        if (regexItem2.IsMatch(placa.Substring(3, 1)))
+                            mensaje.Text = ("PLACA INVALIDA");
+                        else
                         {
-                            var separar_letras = new Regex("^[a-zA-Z]*$");
-                            string letras = placa_auto.Substring(0, 3);
-                            if (separar_letras.IsMatch(placa_auto.Substring(3, 1)))
-                                mensaje.Text = "PLACA INCORRECTA";
-                            else
+                            if (letras.Length == 3)
                             {
-                                if (letras.Length == 3)
+                                var regexItem3 = new Regex("^[0-9]*$");
+                                string numeros = placa.Substring(3, (placa.Length - 3));
+                                if (numeros.Length == 4 && regexItem3.IsMatch(numeros))
                                 {
-                                    var separar_numeros = new Regex("^[0-9]*$");
-                                    string numeros = placa_auto.Substring(3, (placa_auto.Length - 3));
-                                    if (numeros.Length == 4 && separar_numeros.IsMatch(numeros))
-                                    {
-                                        Class1 dia = new Class1();
-                                        fechas = (calendario.Value.ToString("dddd", new CultureInfo("es-ES"))).ToString();
-                                        if ((Numero_Horas.Value == 7 || Numero_Horas.Value == 8) && ampm.Text.Equals("A.M.") && (dia.Equals(fechas)))
-                                        {
-                                            
-                                            mensaje.Text = "NO PUEDE CIRCULAR";
-                                        }
-                                        else if ((Numero_Horas.Value == 9 && Numero_Minutos.Value < 30) && ampm.Text.Equals("A.M.") && (dia.Equals(fechas)))
-                                        {
-                                            mensaje.Text = "NO PUEDE CIRCULAR";
-                                        }
-                                        else if ((Numero_Horas.Value == 4 || Numero_Horas.Value == 5 || Numero_Horas.Value == 6) && ampm.Text.Equals("P.M.") && (dia.Equals(fechas)))
-                                        {
-                                            mensaje.Text = "NO PUEDE CIRCULAR";
-                                        }
-                                        else if ((Numero_Horas.Value == 7 && Numero_Minutos.Value < 30) && ampm.Text.Equals("P.M.") && (dia.Equals(fechas)))
-                                        {
-                                            mensaje.Text = "NO PUEDE CIRCULAR";
-                                        }
-                                        else
-                                        {
-                                            mensaje.Text = "SI PUEDE CIRCULAR";
-                                        }
 
+                                    string dia = Pico_Placa(int.Parse(numeros.Substring(3, 1)));
+                                    fecha = (calendario.Value.ToString("dddd", new CultureInfo("es-ES"))).ToString();
+                                    if ((Numero_Horas.Value == 7 || Numero_Horas.Value == 8) && ampm.Text.Equals("A.M.") && (dia.Equals(fecha)))
+                                    {
+                                        mensaje.Text= ("NO PUEDE CIRCULAR");
+                                    }
+                                    else if ((Numero_Horas.Value == 9 && Numero_Minutos.Value < 30) && ampm.Text.Equals("A.M.") && (dia.Equals(fecha)))
+                                    {
+                                        mensaje.Text = ("NO PUEDE CIRCULAR");
+                                    }
+                                    else if ((Numero_Horas.Value == 4 || Numero_Horas.Value == 5 || Numero_Horas.Value == 6) && ampm.Text.Equals("P.M.") && (dia.Equals(fecha)))
+                                    {
+                                        mensaje.Text = ("NO PUEDE CIRCULAR");
+                                    }
+                                    else if ((Numero_Horas.Value == 7 && Numero_Minutos.Value < 30) && ampm.Text.Equals("P.M.") && (dia.Equals(fecha)))
+                                    {
+                                        mensaje.Text = ("NO PUEDE CIRCULAR");
                                     }
                                     else
                                     {
-                                        mensaje.Text = "INGRESE COMO EL EJEMPLO: XXX0000";
+                                        mensaje.Text = ("SI PUEDE CIRCULAR");
                                     }
+
+                                }
+                                else
+                                {
+                                    mensaje.Text = ("PLACA INCORRECTA: EJEMPLO-- XXX1111");
                                 }
                             }
-                        }
-                        else
-                        {
-                            mensaje.Text = "INGRESE COMO EL EJEMPLO: XXX0000";
                         }
                     }
                     else
                     {
-                        mensaje.Text = "DATOS INVALIDOS";
+                        mensaje.Text = ("PLACA INCORRECTA: EJEMPLO-- XXX1111");
                     }
                 }
-                catch (Exception retorno)
+                else
                 {
-                    throw retorno;
+                    mensaje.Text = ("PLACA INVALIDA");
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+          
+            
+            }
+        
+      
+        }
+
+
+        private string Pico_Placa(int Digito_Final)
+        {
+            try
+            {
+                int operador = 0;
+                string temporal = "";
+
+                if (Digito_Final % 2 == 0)
+                    operador = Digito_Final;
+                else
+                {
+                    operador = (Digito_Final + 1);
+                    if (operador == 10)
+                        operador = 0;
+                }
+
+                switch (operador)
+                {
+                    case 0:
+                        temporal = "viernes";
+                        break;
+                    case 2:
+                        temporal = "lunes";
+                        break;
+                    case 4:
+                        temporal = "martes";
+                        break;
+                    case 6:
+                        temporal = "miércoles";
+                        break;
+                    case 8:
+                        temporal = "jueves";
+                        break;
+                }
+                return temporal;
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+
         }
 
         private void borrar_Click(object sender, EventArgs e)
         {
-            Ingrese_Placa.Text = "";
-            Numero_Horas.Value = 0;
-            Numero_Minutos.Value = 0;
             mensaje.Text = "";
-            calcularpico_placa.Visible = true;
-
+            Ingrese_Placa.Text = "";
         }
-   
-  
-        
-            
-        
-
-        
-     
-
-        
-
+ 
 
     }
 
